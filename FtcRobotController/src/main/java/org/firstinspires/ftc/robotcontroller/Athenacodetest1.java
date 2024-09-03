@@ -33,7 +33,7 @@ public class Athenacodetest1 extends LinearOpMode {
     private Servo FoodClaw1 = null; // Servo for FoodClaw1
     private Servo FoodClaw2 = null; // Servo for FoodClaw2
     private DcMotorEx antena = null;    // New Core Hex Motor for Antena
-    private ColorSensor colorSensor = null; // Color Sensor for detecting orange
+    private ColorSensor syauqiahhsensor = null; // Color Sensor for detecting orange
 
     private double speed = 0;
     private boolean isClawOpen = false; // Track if claws are open
@@ -108,7 +108,7 @@ public class Athenacodetest1 extends LinearOpMode {
     private void initFoodClaws() {
         FoodClaw1 = hardwareMap.get(Servo.class, "FoodClaw1");
         FoodClaw2 = hardwareMap.get(Servo.class, "FoodClaw2");
-        colorSensor = hardwareMap.get(ColorSensor.class, "ColorSensor");
+        syauqiahhsensor = hardwareMap.get(ColorSensor.class, "ColorSensor");
 
         // Initialize the FoodClaws to the closed position
         FoodClaw1.setPosition(CLAW_CLOSE_POSITION);
@@ -206,9 +206,9 @@ public class Athenacodetest1 extends LinearOpMode {
 
     private void controlFoodClaws() {
         // Read color sensor values
-        int red = colorSensor.red();
-        int green = colorSensor.green();
-        int blue = colorSensor.blue();
+        int red = syauqiahhsensor.red();
+        int green = syauqiahhsensor.green();
+        int blue = syauqiahhsensor.blue();
 
         boolean isOrange = (red > 200 && green > 100 && blue < 100);
 

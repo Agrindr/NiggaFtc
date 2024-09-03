@@ -20,6 +20,7 @@ public class LifterOnly extends OpMode {
 
     @Override
     public void loop() {
+
         // Control the lifter using the left joystick's Y-axis on gamepad1
         double lifterPower = -gamepad1.left_stick_y; // Invert the Y-axis if necessary
 
