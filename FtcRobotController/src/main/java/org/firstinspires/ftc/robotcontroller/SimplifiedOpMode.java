@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -17,19 +16,16 @@ public class SimplifiedOpMode extends LinearOpMode {
     private DcMotorEx leftDrive = null;
     private DcMotorEx lifter1 = null;
     private CRServo storageDoor1 = null;
+    private CRServo storageDoor2 = null;
     private CRServo downStorageDoor1 = null;
     private CRServo downStorageDoor2 = null;
-
-    private Servo foodClawServo1 = null; // Servo for FoodClaw1
-    private Servo foodClawServo2 = null; // Servo for FoodClaw2
+    private DcMotorEx lifter2 = null;
+    private CRServo foodClawServo1 = null; // CRServo for FoodClaw1
+    private CRServo foodClawServo2 = null; // CRServo for FoodClaw2
     private DcMotorEx antena = null;    // New Core Hex Motor for Antena
 
     private double speed = 0;
     private boolean isClawOpen = false; // Track if claws are open
-
-    // Servo position constants for food claws
-    private static final double CLAW_OPEN_POSITION = 0.6;  // Example position to open claws
-    private static final double CLAW_CLOSED_POSITION = 0.2;  // Example position to close claws
 
     @Override
     public void runOpMode() {
@@ -55,13 +51,14 @@ public class SimplifiedOpMode extends LinearOpMode {
     }
 
     private void initRobotHardware() {
-        rightDrive = hardwareMap.get(DcMotorEx.class, "RightMotors");
-        leftDrive = hardwareMap.get(DcMotorEx.class, "LeftMotors");
-        lifter1 = hardwareMap.get(DcMotorEx.class, "LifterMotors1");
+        rightDrive = hardwareMap.get(DcMotorEx.class, "rightMotor");
+        leftDrive = hardwareMap.get(DcMotorEx.class, "leftMotor");
+        lifter1 = hardwareMap.get(DcMotorEx.class, "lifter1");
         storageDoor1 = hardwareMap.get(CRServo.class, "StorageDoor1");
-        downStorageDoor1 = hardwareMap.get(CRServo.class, "DownStorageDoor1");
-        downStorageDoor2 = hardwareMap.get(CRServo.class, "DownStorageDoor2");
-
+        storageDoor2 = hardwareMap.get(CRServo.class, "StorageDoor2");
+        downStorageDoor1 = hardwareMap.get(CRServo.class, "downStorageDoor1");
+        downStorageDoor2 = hardwareMap.get(CRServo.class, "downStorageDoor2");
+        lifter2 = hardwareMap.get(DcMotorEx.class, "lifter2");
         // Initialize the new Antena motor
         antena = hardwareMap.get(DcMotorEx.class, "Antena");
 
@@ -73,13 +70,13 @@ public class SimplifiedOpMode extends LinearOpMode {
     }
 
     private void initFoodClaws() {
-        // Initialize servos for food claws
-        foodClawServo1 = hardwareMap.get(Servo.class, "FoodClawServo1");
-        foodClawServo2 = hardwareMap.get(Servo.class, "FoodClawServo2");
+        // Initialize CRServos for food claws
+        foodClawServo1 = hardwareMap.get(CRServo.class, "FoodClawServo1");
+        foodClawServo2 = hardwareMap.get(CRServo.class, "FoodClawServo2");
 
-        // Set initial positions for the servos
-        foodClawServo1.setPosition(CLAW_CLOSED_POSITION);
-        foodClawServo2.setPosition(CLAW_CLOSED_POSITION);
+        // Stop CRServos initially
+        foodClawServo1.setPower(0);
+        foodClawServo2.setPower(0);
     }
 
     private void controlRobot() {
@@ -114,19 +111,25 @@ public class SimplifiedOpMode extends LinearOpMode {
         // Intake control
         if (gamepad1.y) {
             lifter1.setPower(1);
+            lifter2.setPower(1);
         } else if (gamepad1.a) {
             lifter1.setPower(-1);
+            lifter2.setPower(-1);
         } else {
             lifter1.setPower(0);
+            lifter2.setPower(0);
         }
 
         // Storage door control
         if (gamepad1.a) {
             storageDoor1.setPower(1);
+            storageDoor2.setPower(1);
         } else if (gamepad1.b) {
             storageDoor1.setPower(-1);
+            storageDoor2.setPower(-1);
         } else {
             storageDoor1.setPower(0);
+            storageDoor2.setPower(0);
         }
 
         // Control the Antena motor
@@ -149,18 +152,22 @@ public class SimplifiedOpMode extends LinearOpMode {
     private void controlFoodClaws() {
         if (gamepad1.x) {
             if (!isClawOpen) {
-                // Open claws to a defined position
-                foodClawServo1.setPosition(CLAW_OPEN_POSITION);
-                foodClawServo2.setPosition(CLAW_OPEN_POSITION);
+                // Open claws by setting power
+                foodClawServo1.setPower(1);
+                foodClawServo2.setPower(1);
                 isClawOpen = true;
             }
         } else if (gamepad1.b) {
             if (isClawOpen) {
-                // Close claws
-                foodClawServo1.setPosition(CLAW_CLOSED_POSITION);
-                foodClawServo2.setPosition(CLAW_CLOSED_POSITION);
+                // Close claws by setting power in reverse
+                foodClawServo1.setPower(-1);
+                foodClawServo2.setPower(-1);
                 isClawOpen = false;
             }
+        } else {
+            // Stop the servos when not pressing the buttons
+            foodClawServo1.setPower(0);
+            foodClawServo2.setPower(0);
         }
 
         telemetry.addData("Claw Status", isClawOpen ? "Open" : "Closed");
