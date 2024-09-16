@@ -25,9 +25,8 @@ public class MeepMeepViz {
             System.out.println("Current project path: " + imagePath.toString());
 
             File imageFile = new File(imagePath.toString());
-            BufferedImage bufferedImage = ImageIO.read(imageFile);
 
-            image = bufferedImage;
+            image = ImageIO.read(imageFile);
             System.out.println("Successfully loaded image!!");
         } catch (IOException e) {
             e.printStackTrace();
