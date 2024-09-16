@@ -9,6 +9,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
@@ -16,7 +18,13 @@ public class MeepMeepViz {
     public static void main(String[] args) {
         Image image = null;
         try {
-            File imageFile = new File("/Users/aldhan/Documents/FGC-OFFICIAL-ROBOT-CODE/MeepMeepViz/src/main/java/com/example/meepmeepviz/FGC_FIELD.jpg");
+            String projectPath = System.getProperty("user.dir");
+            Path imagePath = Paths.get(projectPath, "MeepMeep/src/main/java/com/example/meepmeep/FGC_FIELD.jpg");
+
+            // Print the project directory
+            System.out.println("Current project path: " + imagePath.toString());
+
+            File imageFile = new File(imagePath.toString());
             BufferedImage bufferedImage = ImageIO.read(imageFile);
 
             image = bufferedImage;

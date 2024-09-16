@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -73,6 +74,64 @@ public class SampleTankDrive extends TankDrive {
     private IMU imu;
 
     private VoltageSensor batteryVoltageSensor;
+    private Telemetry telemetry;
+
+    public SampleTankDrive(HardwareMap hardwareMap, Telemetry telemetry) {
+        super(kV, kA, kStatic, TRACK_WIDTH);
+        this.telemetry = telemetry;
+
+
+        follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID,
+                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+
+        LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        // TODO: adjust the names of the following hardware devices to match your configuration
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
+        imu.initialize(parameters);
+
+        // add/remove motors depending on your robot (e.g., 6WD)
+        LeftMotor = hardwareMap.get(DcMotorEx.class, "leftMotor");
+        RightMotor = hardwareMap.get(DcMotorEx.class, "rightMotor");
+
+
+        RightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        LeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if (RUN_USING_ENCODER) {
+            setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
+            setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
+        }
+
+        // TODO: reverse any motors using DcMotor.setDirection()
+
+        // TODO: if desired, use setLocalizer() to change the localization method
+        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+
+        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this, telemetry ));
+
+//        setLocalizer();
+        trajectorySequenceRunner = new TrajectorySequenceRunner(
+                follower, HEADING_PID, batteryVoltageSensor,
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+        );
+    }
 
     public SampleTankDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH);
@@ -98,6 +157,10 @@ public class SampleTankDrive extends TankDrive {
         LeftMotor = hardwareMap.get(DcMotorEx.class, "leftMotor");
         RightMotor = hardwareMap.get(DcMotorEx.class, "rightMotor");
 
+
+        RightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         LeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -115,7 +178,8 @@ public class SampleTankDrive extends TankDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-//        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap));
+
+        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this ));
 
 //        setLocalizer();
         trajectorySequenceRunner = new TrajectorySequenceRunner(
@@ -187,6 +251,8 @@ public class SampleTankDrive extends TankDrive {
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        telemetry.addData("Signal ", signal == null ? "null" : "not null");
+        telemetry.update();
         if (signal != null) setDriveSignal(signal);
     }
 
@@ -259,8 +325,12 @@ public class SampleTankDrive extends TankDrive {
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        LeftMotor.setPower(v);
-        RightMotor.setPower(v1);
+        telemetry.addData("power1", v);
+        telemetry.addData("power2", v1);
+//        telemetry.update();
+
+//        LeftMotor.setPower(v);
+//        RightMotor.setPower(v1);
     }
 
     @Override

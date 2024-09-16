@@ -25,7 +25,7 @@ public class LocalizationTest extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.sendTelemetryPacket(packet);
 
-        SampleTankDrive drive = new SampleTankDrive(hardwareMap);
+        SampleTankDrive drive = new SampleTankDrive(hardwareMap, telemetry);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -36,7 +36,7 @@ public class LocalizationTest extends LinearOpMode {
                     new Pose2d(
                             -gamepad1.left_stick_x,
                             -gamepad1.left_stick_y,
-                            -gamepad1.right_stick_x
+                            -gamepad1.right_stick_y
                     )
             );
 
