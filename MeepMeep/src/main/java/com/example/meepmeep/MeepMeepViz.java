@@ -6,12 +6,10 @@ import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import javax.imageio.ImageIO;
 
 public class MeepMeepViz {
@@ -26,7 +24,9 @@ public class MeepMeepViz {
 
             File imageFile = new File(imagePath.toString());
 
+
             image = ImageIO.read(imageFile);
+
             System.out.println("Successfully loaded image!!");
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.media.Image;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -8,6 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -20,18 +27,25 @@ import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        TelemetryPacket packet = new TelemetryPacket();
 
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        dashboard.sendTelemetryPacket(packet);
+        String projectPath = System.getProperty("user.dir");
+        File imageFilePath = new File(projectPath, "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/FGC_FIELD.jpg");
+
+        TelemetryPacket packet = new TelemetryPacket(false);
+        packet.fieldOverlay()
+                .drawImage("/dash/FGC_FIELD.jpg", 0, 0, 144, 144);
 
         SampleTankDrive drive = new SampleTankDrive(hardwareMap, telemetry);
-
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
 
         waitForStart();
 
+        packet.fieldOverlay()
+                .drawImage("/dash/FGC_FIELD.jpg", 0, 0, 144, 144);
         while (!isStopRequested()) {
+            dashboard.sendTelemetryPacket(packet);
+
             drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_x,
@@ -43,6 +57,7 @@ public class LocalizationTest extends LinearOpMode {
             drive.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("imagePath", imageFilePath.toString());
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
