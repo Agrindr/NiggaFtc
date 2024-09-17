@@ -51,7 +51,7 @@ public class TeleopWithOdometry extends LinearOpMode {
 
         // Reset encoders
         leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         horizontalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Set encoders to run without encoders (if you're only using them for odometry)

@@ -4,13 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name = "Simple Autonomous", group = "Linear Opmode")
+@Autonomous(name = "Simple Autonomous with 2 Motors", group = "Linear Opmode")
 public class SimpleAutonomous extends LinearOpMode {
 
-    private DcMotor leftFrontMotor;
-    private DcMotor leftRearMotor;
-    private DcMotor rightFrontMotor;
-    private DcMotor rightRearMotor;
+    private DcMotor leftMotor;
+    private DcMotor rightMotor;
 
     @Override
     public void runOpMode() {
@@ -50,13 +48,11 @@ public class SimpleAutonomous extends LinearOpMode {
 
     private void initHardware() {
         // Initialize the motors from the hardware map
-        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
-        leftRearMotor = hardwareMap.get(DcMotor.class, "leftRearMotor");
-        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
-        rightRearMotor = hardwareMap.get(DcMotor.class, "rightRearMotor");
+        leftMotor = hardwareMap.get(DcMotor.class, "leftMotor");
+        rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
 
         // Set all motors to zero power
-        setMotorPowers(0, 0, 0, 0);
+        setMotorPowers(0, 0);
     }
 
     private void setPoseEstimate(double x, double y, double heading) {
@@ -87,40 +83,40 @@ public class SimpleAutonomous extends LinearOpMode {
 
     private void turnToAngle(double angle) {
         // Turn the robot to the specified angle
-        // Implement your turning logic here (e.g., using PID or a simple proportional control)
-
         telemetry.addData("Turning", "To angle: %.2f degrees", Math.toDegrees(angle));
         telemetry.update();
 
-        // Example: Simple turn logic
-        setMotorPowers(0.5, -0.5, 0.5, -0.5); // Turn in place
+        // Example: Simple turn logic for two motors
+        if (angle > 0) {
+            // Turn right
+            setMotorPowers(0.5, -0.5); // Right motor moves backward, left motor moves forward
+        } else {
+            // Turn left
+            setMotorPowers(-0.5, 0.5); // Left motor moves backward, right motor moves forward
+        }
         sleep(500); // Adjust this delay based on actual turn speed and angle
-        setMotorPowers(0, 0, 0, 0);
+        setMotorPowers(0, 0);
     }
 
     private void driveForward(double distance) {
         // Drive the robot forward for a certain distance
-        // Implement your driving logic here (e.g., using encoder counts or time-based)
-
         telemetry.addData("Driving", "Forward distance: %.2f", distance);
         telemetry.update();
 
         // Example: Simple drive forward logic
-        setMotorPowers(0.5, 0.5, 0.5, 0.5); // Drive straight
+        setMotorPowers(0.5, 0.5); // Drive both motors forward
         sleep(1000); // Adjust this delay based on actual speed and distance
-        setMotorPowers(0, 0, 0, 0);
+        setMotorPowers(0, 0);
     }
 
     private void stopMotors() {
         // Stop all motors
-        setMotorPowers(0, 0, 0, 0);
+        setMotorPowers(0, 0);
     }
 
-    private void setMotorPowers(double lfPower, double lrPower, double rfPower, double rrPower) {
-        // Set motor powers
-        leftFrontMotor.setPower(lfPower);
-        leftRearMotor.setPower(lrPower);
-        rightFrontMotor.setPower(rfPower);
-        rightRearMotor.setPower(rrPower);
+    private void setMotorPowers(double leftPower, double rightPower) {
+        // Set motor powers for left and right motors
+        leftMotor.setPower(leftPower);
+        rightMotor.setPower(rightPower);
     }
 }

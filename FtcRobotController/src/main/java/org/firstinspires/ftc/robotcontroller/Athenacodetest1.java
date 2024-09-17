@@ -238,16 +238,9 @@ public class Athenacodetest1 extends LinearOpMode {
                 telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
             }
 
-            // Set the gamepad light to green
-            gamepad1.setLedColor(0, 1, 0, 100);
 
-            // Show "OK" on the detector (simulated here as telemetry)
-            telemetry.addData("Detector", "OK");
 
-            // Trigger autonomous mode when Y button is pressed
-            if (gamepad1.y) {
-                isAutonomousActive = true;
-            }
+
 
         } else {
             telemetry.addLine("No tags detected");
