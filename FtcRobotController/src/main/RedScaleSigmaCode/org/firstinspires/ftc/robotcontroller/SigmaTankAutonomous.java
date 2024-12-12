@@ -54,7 +54,7 @@ public class SigmaTankAutonomous extends LinearOpMode {
             sleep(500);
 
             leftMotor.setPower(0.5);
-            rightMotor.setPower(-0.5);
+            rightMotor.setPower(-0.5);c
             sleep(500);
 
             leftMotor.setPower(-0.5);
